@@ -27,5 +27,5 @@ fi
 # Begin script
 echo "Inciando importação peoplesoft no NOW..."
 echo "Executando em $env"
-java -jar execute-peoplesoft.jar -e$parameterE -u$parameterU
+java -jar execute-peoplesoft-1.0.0.jar -e$parameterE -u$parameterU
 echo "\nImportação finalizada."
