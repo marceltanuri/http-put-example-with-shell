@@ -24,8 +24,11 @@ then
    helpFunction
 fi
 
+script_dir=$(dirname $0)
+
 # Begin script
 echo "Inciando importação peoplesoft no NOW..."
 echo "Executando em $parameterE"
-java -jar execute-peopelesoft-1.0.0-jar-with-dependencies.jar -e$parameterE -u$parameterU -s0
+echo "$script_dir"
+java -jar "$script_dir"/execute-peopelesoft-1.0.0-jar-with-dependencies.jar -e$parameterE -u$parameterU -s0 > "$script_dir"/employee-import.log 2>&1 
 echo "\nImportação finalizada."
