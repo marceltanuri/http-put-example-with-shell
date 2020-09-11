@@ -30,5 +30,5 @@ script_dir=$(dirname $0)
 echo "Inciando importação peoplesoft no NOW..."
 echo "Executando em $parameterE"
 echo "$script_dir"
-java -jar "$script_dir"/execute-peopelesoft-1.0.0-jar-with-dependencies.jar -e$parameterE -u$parameterU -s0 > "$script_dir"/employee-import.log 2>&1 
+java -jar "$script_dir"/execute-peopelesoft-1.0.0-jar-with-dependencies.jar -e$parameterE -u$parameterU -s0 -Dhttps.proxyHost=proxyapp.santanderbr.corp -Dhttps.proxyPort=80 -Dhttp.proxyHost=proxyapp.santanderbr.corp -Dhttp.proxyPort=80> "$script_dir"/employee-import.log 2>&1 
 echo "\nImportação finalizada."

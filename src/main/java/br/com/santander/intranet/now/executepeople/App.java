@@ -1,17 +1,22 @@
 package br.com.santander.intranet.now.executepeople;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Base64;
 
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
@@ -20,17 +25,18 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 
 public class App {
 
 	private static final String EMPTY = "";
-	private static final String PRODUCTION_HOSTNAME = "now.santanderbr.corp";
-	private static final String HOMOLOG_HOSTNAME = "now.santanderbr.pre.corp";
+	private static final String PRODUCTION_HOSTNAME = "localhost:6400";
+	private static final String HOMOLOG_HOSTNAME = "localhost:6400";
 	private static final String PATH = "/api/jsonws/ps.peoplesoft/importar-dados";
-	private static final String HTTPS = "https://";
+	private static final String HTTPS = "http://";
 
 	public static void main(String[] args) throws IOException {
 
@@ -44,9 +50,6 @@ public class App {
 
 			if (arg.startsWith("-u") && arg.length() > 2)
 				credentials = arg.substring(2);
-
-			if (arg.startsWith("-s") && arg.length() > 2)
-				ssl = !arg.substring(2).equals("0");
 		}
 
 		String hostname = EMPTY;
@@ -63,11 +66,12 @@ public class App {
 
 		CloseableHttpClient httpClient;
 		try {
-			httpClient = buildClient(ssl);
+			httpClient = buildClient();
 
 			System.out.println("Connecting to: " + httpsURL);
 
 			HttpGet request = new HttpGet(httpsURL);
+			
 			request.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding);
 			System.out.println("executing request " + request.getRequestLine());
 			CloseableHttpResponse response = httpClient.execute(request);
@@ -87,32 +91,11 @@ public class App {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
-	private static CloseableHttpClient buildClient(boolean ssl)
-			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
-		CloseableHttpClient httpClient;
-
-		if (!ssl) {
-			httpClient = buildClientWithNoSSL();
-		} else {
-			httpClient = HttpClients.createDefault();
-		}
-		return httpClient;
-	}
-
-	private static CloseableHttpClient buildClientWithNoSSL()
-			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
-		final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (x509CertChain, authType) -> true)
-				.build();
-
-		CloseableHttpClient httpClient = HttpClientBuilder.create().setSSLContext(sslContext)
-				.setConnectionManager(new PoolingHttpClientConnectionManager(RegistryBuilder
-						.<ConnectionSocketFactory>create().register("http", PlainConnectionSocketFactory.INSTANCE)
-						.register("https", new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
-						.build()))
-				.build();
+	private static CloseableHttpClient buildClient()
+			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException, CertificateException, IOException {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
 		return httpClient;
 	}
 }
