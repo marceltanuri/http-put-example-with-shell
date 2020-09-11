@@ -15,6 +15,7 @@
 .idea
 .DS_Store
 /bundles
+/.vscode
 /target
 /gradle-*.properties
 /plugins-sdk/**/classes
