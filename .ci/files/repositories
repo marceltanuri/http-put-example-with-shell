@@ -1,4 +1,0 @@
-[repositories]
-local
-my-ivy-proxy-releases: http://artifactory.santanderbr.corp/artifactory/sbt-all/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
-my-maven-proxy-releases: http://artifactory.santanderbr.corp/artifactory/sbt-all/
